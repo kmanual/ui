@@ -32,4 +32,8 @@ class GrpcClient {
   ResponseFuture<GetImageListResponse> getImageList(bool all) {
     return client.getImageList(GetImageListReuqest()..all = all);
   }
+
+  ResponseFuture<GetTagListResponse> getTagList(String name) {
+    return client.getTagList(GetTagListReuqest()..name = name);
+  }
 }
