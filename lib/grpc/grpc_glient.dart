@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:kmanual/grpc/generated/kubernetes.pbgrpc.dart';
 import 'package:kmanual/grpc/generated/repository.pbgrpc.dart';
 import 'package:kmanual/grpc/grpc_client_builder.dart';
 import 'package:grpc/service_api.dart';
@@ -7,7 +8,8 @@ import 'package:grpc/service_api.dart';
 final grpc = GrpcClient();
 
 class GrpcClient {
-  final RepositoryClient client;
+  final RepositoryClient repository;
+  final KubernetesClient kubernetes;
 
   static final GrpcClient _singleton = GrpcClient._internal();
 
@@ -22,7 +24,13 @@ class GrpcClient {
   }
 
   GrpcClient._internal()
-      : client = RepositoryClient(
+      : repository = RepositoryClient(
+          createChannel(),
+          options: CallOptions(
+            providers: [_metadataProvider],
+          ),
+        ),
+        kubernetes = KubernetesClient(
           createChannel(),
           options: CallOptions(
             providers: [_metadataProvider],
@@ -30,10 +38,15 @@ class GrpcClient {
         );
 
   ResponseFuture<GetImageListResponse> getImageList(bool all) {
-    return client.getImageList(GetImageListReuqest()..all = all);
+    return repository.getImageList(GetImageListReuqest()..all = all);
   }
 
   ResponseFuture<GetTagListResponse> getTagList(String name) {
-    return client.getTagList(GetTagListReuqest()..name = name);
+    return repository.getTagList(GetTagListReuqest()..name = name);
+  }
+
+  ResponseFuture<GetKServiceListResponse> getKServiceList(String namespace) {
+    return kubernetes
+        .getKServiceList(GetKServiceListReuqest()..namespace = namespace);
   }
 }
