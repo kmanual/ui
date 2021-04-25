@@ -33,7 +33,44 @@ class _ImagePageState extends State<ImagePage> {
                 .map(
                   (e) => ListTile(
                     title: Text(e),
-                    onTap: () {},
+                    trailing: IconButton(
+                      tooltip: 'Deploy to Knative',
+                      icon: Icon(Icons.download),
+                      onPressed: () async {
+                        final kservices =
+                            await GrpcClient().getKServiceList('default');
+
+                        await showDialog(
+                            context: context,
+                            builder: (contex) {
+                              return AlertDialog(
+                                title: Text('Deploy to Knative'),
+                                content: ListView(
+                                  children: kservices.services
+                                      .map(
+                                        (e) => SimpleDialogOption(
+                                          child: Text(e),
+                                          onPressed: () {},
+                                        ),
+                                      )
+                                      .toList(),
+                                ),
+                                actions: [
+                                  ElevatedButton(
+                                    onPressed: () {},
+                                    child: Text('OK'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text('Cancel'),
+                                  ),
+                                ],
+                              );
+                            });
+                      },
+                    ),
                   ),
                 )
                 .toList(),
