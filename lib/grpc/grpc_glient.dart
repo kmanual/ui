@@ -38,15 +38,28 @@ class GrpcClient {
         );
 
   ResponseFuture<GetImageListResponse> getImageList(bool all) {
-    return repository.getImageList(GetImageListReuqest()..all = all);
+    return repository.getImageList(
+      GetImageListReuqest()..all = all,
+    );
   }
 
   ResponseFuture<GetTagListResponse> getTagList(String name) {
-    return repository.getTagList(GetTagListReuqest()..name = name);
+    return repository.getTagList(
+      GetTagListReuqest()..name = name,
+    );
+  }
+
+  ResponseFuture<GetManifestResponse> getManifest(String name, String tag) {
+    return repository.getManifest(
+      GetManifestReuqest()
+        ..name = name
+        ..tag = tag,
+    );
   }
 
   ResponseFuture<GetKServiceListResponse> getKServiceList(String namespace) {
-    return kubernetes
-        .getKServiceList(GetKServiceListReuqest()..namespace = namespace);
+    return kubernetes.getKServiceList(
+      GetKServiceListReuqest()..namespace = namespace,
+    );
   }
 }

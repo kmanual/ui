@@ -31,8 +31,18 @@ class _ImagePageState extends State<ImagePage> {
           return ListView(
             children: snapshot.data!.tags
                 .map(
-                  (e) => ListTile(
-                    title: Text(e),
+                  (tag) => ListTile(
+                    title: Text(tag),
+                    subtitle: FutureBuilder<GetManifestResponse>(
+                      future: GrpcClient().getManifest(name, tag),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return Text('Loading...');
+                        }
+
+                        return Text(snapshot.data?.config.digest ?? '');
+                      },
+                    ),
                     trailing: IconButton(
                       tooltip: 'Deploy to Knative',
                       icon: Icon(Icons.download),
@@ -41,34 +51,35 @@ class _ImagePageState extends State<ImagePage> {
                             await GrpcClient().getKServiceList('default');
 
                         await showDialog(
-                            context: context,
-                            builder: (contex) {
-                              return AlertDialog(
-                                title: Text('Deploy to Knative'),
-                                content: ListView(
-                                  children: kservices.services
-                                      .map(
-                                        (e) => SimpleDialogOption(
-                                          child: Text(e),
-                                          onPressed: () {},
-                                        ),
-                                      )
-                                      .toList(),
+                          context: context,
+                          builder: (contex) {
+                            return AlertDialog(
+                              title: Text('Deploy to Knative'),
+                              content: ListView(
+                                children: kservices.services
+                                    .map(
+                                      (e) => SimpleDialogOption(
+                                        child: Text(e),
+                                        onPressed: () {},
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                              actions: [
+                                ElevatedButton(
+                                  onPressed: () {},
+                                  child: Text('OK'),
                                 ),
-                                actions: [
-                                  ElevatedButton(
-                                    onPressed: () {},
-                                    child: Text('OK'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text('Cancel'),
-                                  ),
-                                ],
-                              );
-                            });
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('Cancel'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
                       },
                     ),
                   ),
